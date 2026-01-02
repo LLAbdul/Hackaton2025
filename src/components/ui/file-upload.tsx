@@ -1,9 +1,8 @@
 import { cn } from "@/lib/utils";
-import { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { UploadIcon } from "lucide-react";
+import { UploadCloud, UploadIcon } from "lucide-react";
+import { useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { UploadCloud } from "lucide-react";
 
 const mainVariant = {
   initial: {
