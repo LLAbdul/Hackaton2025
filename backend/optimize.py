@@ -2,7 +2,9 @@ import pandas as pd
 from resources import damage_costs_df
 
 def optimize(wildfires_df: pd.DataFrame, resources_df: pd.DataFrame): 
+     # Sort wildfires by severity so that 'high' is handled first, then 'medium', then 'low'
     wildfires_df.sort_values(by='severity', key=lambda x: x.map({'high': 1, 'medium': 2, 'low': 3}), inplace=True)
+     # Sort resources by cost so we deploy the cheapest first
     resources_df.sort_values(by='cost', inplace=True)
 
     resources = {}
@@ -17,6 +19,7 @@ def optimize(wildfires_df: pd.DataFrame, resources_df: pd.DataFrame):
     resource_deployments = []
     current_resource = resources_df.iloc[0]
     for index, wildfire_row in wildfires_df.iterrows():
+        # Get the estimated damage cost if the fire is not addressed
         miss_cost = damage_costs_df[damage_costs_df['severity'] == wildfire_row['severity']]['cost'].values[0]
         if current_resource is None:
             resource_deployments.append({
@@ -25,10 +28,11 @@ def optimize(wildfires_df: pd.DataFrame, resources_df: pd.DataFrame):
                 'estimated_fire_start_time': wildfire_row['fire_start_time'],
                 'severity': wildfire_row['severity'],
                 'location': wildfire_row['location'],
-                'cost': miss_cost,
+                'cost': miss_cost, # operational cost equals miss cost in this case
                 'miss_cost': miss_cost
             })
         else:
+             # Assign the current resource to this wildfire
             resource_deployments.append({
                 'id': index,
                 'reported_time': wildfire_row['timestamp'],
